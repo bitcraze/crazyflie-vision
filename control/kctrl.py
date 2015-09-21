@@ -70,24 +70,37 @@ client_conn = context.socket(zmq.PUSH)
 client_conn.connect("tcp://127.0.0.1:1212")
 
 kinect_conn = context.socket(zmq.PULL)
-kinect_conn.connect("tcp://192.168.0.2:1213")
+kinect_conn.connect("tcp://127.0.0.1:7777")
 #kinect_conn.connect("tcp://172.16.13.90:1213")
 
 midi_conn = context.socket(zmq.PULL)
 midi_conn.connect("tcp://192.168.0.2:1250")
 
 pid_viz_conn = context.socket(zmq.PUSH)
-pid_viz_conn.connect("tcp://127.0.0.1:5123")
+pid_viz_conn.connect("tcp://172.16.14.106:5123")
 
 ctrl_conn = context.socket(zmq.PULL)
-ctrl_conn.connect("tcp://127.0.0.1:5124")
+ctrl_conn.connect("tcp://172.16.14.106:5124")
 
 yaw_sp = 0
 
 #r_pid = PID_RP(name="roll", P=30, I=0, D=10, Integrator_max=5, Integrator_min=-5, set_point=0, zmq_connection=pid_viz_conn)
 #p_pid = PID_RP(name="pitch", P=30, I=0, D=10, Integrator_max=5, Integrator_min=-5, set_point=0, zmq_connection=pid_viz_conn)
-r_pid = PID_RP(name="roll", P=25, I=0.28, D=7, Integrator_max=5, Integrator_min=-5, set_point=0, zmq_connection=pid_viz_conn)
-p_pid = PID_RP(name="pitch", P=25, I=0.28, D=7, Integrator_max=5, Integrator_min=-5, set_point=0, zmq_connection=pid_viz_conn)
+#r_pid = PID_RP(name="roll", P=25, I=0.28, D=7, Integrator_max=5, Integrator_min=-5, set_point=0, zmq_connection=pid_viz_conn)
+#p_pid = PID_RP(name="pitch", P=25, I=0.28, D=7, Integrator_max=5, Integrator_min=-5, set_point=0, zmq_connection=pid_viz_conn)
+
+#r_pid = PID_RP(name="roll", P=10, I=0.1, D=8, Integrator_max=50000, Integrator_min=-50000, set_point=0, zmq_connection=pid_viz_conn)
+#p_pid = PID_RP(name="pitch", P=10, I=0.1, D=8, Integrator_max=50000, Integrator_min=-50000, set_point=0, zmq_connection=pid_viz_conn)
+
+r_pid = PID_RP(name="roll", P=40, I=0, D=10, Integrator_max=50000, Integrator_min=-50000, set_point=0, zmq_connection=pid_viz_conn)
+p_pid = PID_RP(name="pitch", P=40, I=0, D=10, Integrator_max=50000, Integrator_min=-50000, set_point=0, zmq_connection=pid_viz_conn)
+
+# Manual focus 20
+# Manual exposure 33
+
+
+#r_pid = PID_RP(name="roll", P=25, I=0.4, D=5, Integrator_max=15, Integrator_min=-15, set_point=0, zmq_connection=pid_viz_conn)
+
 y_pid = PID_RP(name="yaw", P=5, I=0, D=0.35, Integrator_max=5, Integrator_min=-5, set_point=0, zmq_connection=pid_viz_conn)
 #r_pid = PID_RP(P=0.1, D=0.3, I=0, Integrator_max=5, Integrator_min=-5, set_point=0)
 #p_pid = PID_RP(P=0.1, D=0.3, I=0, Integrator_max=5, Integrator_min=-5, set_point=0)
@@ -208,6 +221,11 @@ while True:
                 velocity = midi_acc
                 vv_pid.set_point = velocity
                 dt = (time.time() - prev_t)
+
+                if prev_z == 0:
+                    prev_z = z
+                z = (z + prev_z)/2
+
                 curr_velocity = (z-prev_z)/dt
                 curr_acc = (curr_velocity-prev_vz)/dt
                 thrust_sp = vv_pid.update(curr_velocity) + 0.50
@@ -232,9 +250,9 @@ while True:
                 #print "OUT: roll={:2.2f}, pitch={:2.2f}, thrust={:5.2f}, dt={:0.3f}, fps={:2.1f}".format(roll_corr, pitch_corr, thrust_sp, dt, 1/dt)
                 print "OUT: alt={:1.4f}, thrust={:5.2f}, dt={:0.3f}, fps={:2.1f}, speed={:+0.4f}".format(z, thrust_sp, dt, 1/dt, curr_velocity)
                 #print "dt={:0.3f}, fps={:2.1f}".format(dt, 1/dt)
-                cmd["ctrl"]["roll"] = roll_corr / 30.0
-                cmd["ctrl"]["pitch"] = pitch_corr / 30.0
-                cmd["ctrl"]["thrust"] = thrust_sp
+                cmd["ctrl"]["roll"] = roll_corr # math.copysign(roll_corr * roll_corr, roll_corr)
+                cmd["ctrl"]["pitch"] = pitch_corr # math.copysign(pitch_corr * pitch_corr, pitch_corr)
+                cmd["ctrl"]["thrust"] = thrust_sp * 100.0
                 cmd["ctrl"]["yaw"] = yaw_out
             else:
                  on_detect_counter += 1
@@ -258,4 +276,3 @@ while True:
         client_conn.send_json(cmd, zmq.NOBLOCK)
     except simplejson.scanner.JSONDecodeError as e:
         print e
-
