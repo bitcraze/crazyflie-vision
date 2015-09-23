@@ -80,7 +80,7 @@ pid_viz_conn = context.socket(zmq.PUSH)
 pid_viz_conn.connect("tcp://172.16.14.106:5123")
 
 ctrl_conn = context.socket(zmq.PULL)
-ctrl_conn.connect("tcp://172.16.14.106:5124")
+ctrl_conn.connect("tcp://127.0.0.1:5124")
 
 yaw_sp = 0
 
@@ -92,8 +92,8 @@ yaw_sp = 0
 #r_pid = PID_RP(name="roll", P=10, I=0.1, D=8, Integrator_max=50000, Integrator_min=-50000, set_point=0, zmq_connection=pid_viz_conn)
 #p_pid = PID_RP(name="pitch", P=10, I=0.1, D=8, Integrator_max=50000, Integrator_min=-50000, set_point=0, zmq_connection=pid_viz_conn)
 
-r_pid = PID_RP(name="roll", P=40, I=0, D=10, Integrator_max=50000, Integrator_min=-50000, set_point=0, zmq_connection=pid_viz_conn)
-p_pid = PID_RP(name="pitch", P=40, I=0, D=10, Integrator_max=50000, Integrator_min=-50000, set_point=0, zmq_connection=pid_viz_conn)
+r_pid = PID_RP(name="roll", P=38, I=0, D=13, Integrator_max=50000, Integrator_min=-50000, set_point=0, zmq_connection=pid_viz_conn)
+p_pid = PID_RP(name="pitch", P=38, I=0, D=13, Integrator_max=50000, Integrator_min=-50000, set_point=0, zmq_connection=pid_viz_conn)
 
 # Manual focus 20
 # Manual exposure 33
@@ -220,7 +220,7 @@ while True:
                 velocity = max(min(velocity, 10), -10)  #Limit vertical velocity between -1 and 1 m/sec
                 velocity = midi_acc
                 vv_pid.set_point = velocity
-                dt = (time.time() - prev_t)
+                dt = 1/30.0  # (time.time() - prev_t)
 
                 if prev_z == 0:
                     prev_z = z
