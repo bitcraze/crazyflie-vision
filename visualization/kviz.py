@@ -53,15 +53,16 @@ class MainUI(QtGui.QMainWindow, main_window_class):
         self.setupUi(self)
         context = zmq.Context()
         self.pid_conn = context.socket(zmq.PULL)
-        self.pid_conn.bind("tcp://127.0.0.1:5123")
+        self.pid_conn.bind("tcp://*:5123")
 
         self._new_data_signal.connect(self._new_data)
 
         #self._graphs = {"roll": PlotWidget(fps=30), "pitch": PlotWidget(fps=30),
         #                "yaw": PlotWidget(fps=30), "thrust": PlotWidget(fps=30)}
         #self._graphs = {"position": PlotWidget(fps=30), "velocity": PlotWidget(fps=30)}
-        self._graphs = {"velocity": PlotWidget(fps=30)}
-        #self._graphs = {"roll": PlotWidget(fps=30), "pitch": PlotWidget(fps=30)}
+        #self._graphs = {"velocity": PlotWidget(fps=30)}
+        self._graphs = {"roll": PlotWidget(fps=30), "pitch": PlotWidget(fps=30)}
+        #self._graphs = {"roll": PlotWidget(fps=30)}
         #self._graphs = {"yaw": PlotWidget(fps=30)}
 
         for graph in self._graphs:

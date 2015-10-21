@@ -13,6 +13,9 @@ from PyQt4 import QtGui, uic
 from PyQt4.QtCore import pyqtSignal, Qt, pyqtSlot, QDir, QUrl
 from PyQt4.QtGui import QLabel, QActionGroup, QMessageBox, QAction, QDesktopServices
 
+# 172.16.13.38
+
+
 (main_window_class,
 main_windows_base_class) = (uic.loadUiType('ksp.ui'))
 
@@ -32,7 +35,7 @@ class MainUI(QtGui.QMainWindow, main_window_class):
         self.setupUi(self)
         context = zmq.Context()
         control_conn = context.socket(zmq.PUSH)
-        control_conn.bind("tcp://127.0.0.1:5124")
+        control_conn.bind("tcp://*:5124")
 
         self.pos_roll = 0
         self.pos_pitch = 0

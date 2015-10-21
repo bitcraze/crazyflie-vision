@@ -70,8 +70,8 @@ client_conn = context.socket(zmq.PUSH)
 client_conn.connect("tcp://127.0.0.1:1212")
 
 kinect_conn = context.socket(zmq.PULL)
-kinect_conn.connect("tcp://192.168.0.2:1213")
-#kinect_conn.connect("tcp://172.16.13.90:1213")
+kinect_conn.connect("tcp://192.168.0.2:7777")
+#kinect_conn.connect("tcp://172.16.12.136:1213")
 
 midi_conn = context.socket(zmq.PULL)
 midi_conn.connect("tcp://192.168.0.2:1250")
@@ -181,10 +181,10 @@ while True:
         except zmq.error.Again:
             pass
 
-        #print "RP P/I/D={}/{}/{}".format(rp_p, rp_i, rp_d)
+        print "RP P/I/D={}/{}/{}".format(rp_p, rp_i, rp_d)
 
         if time.time() - last_detect_ts < detect_threas_ms:
-            if on_detect_counter >= 5:
+            if on_detect_counter >= 2:
                 #print "IN  : x={:4.2f}, y={:4.2f}, z={:4.2f}, angle={:4.2f}".format(x, y, z, angle)
                 #print "CORR: x={:4.2f}, y={:4.2f}, z={:4.2f}".format(x_r, y_r, z)
 
@@ -232,9 +232,9 @@ while True:
                 #print "OUT: roll={:2.2f}, pitch={:2.2f}, thrust={:5.2f}, dt={:0.3f}, fps={:2.1f}".format(roll_corr, pitch_corr, thrust_sp, dt, 1/dt)
                 print "OUT: alt={:1.4f}, thrust={:5.2f}, dt={:0.3f}, fps={:2.1f}, speed={:+0.4f}".format(z, thrust_sp, dt, 1/dt, curr_velocity)
                 #print "dt={:0.3f}, fps={:2.1f}".format(dt, 1/dt)
-                cmd["ctrl"]["roll"] = roll_corr / 30.0
-                cmd["ctrl"]["pitch"] = pitch_corr / 30.0
-                cmd["ctrl"]["thrust"] = thrust_sp
+                cmd["ctrl"]["roll"] = roll_corr
+                cmd["ctrl"]["pitch"] = pitch_corr
+                cmd["ctrl"]["thrust"] = thrust_sp * 100
                 cmd["ctrl"]["yaw"] = yaw_out
             else:
                  on_detect_counter += 1
