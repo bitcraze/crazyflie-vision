@@ -1,5 +1,7 @@
 # Crazyflie Vision scripts
 
+**This repository is not activly being maintained, but this might change in the future so feel free to make an issue to request a new functionality.**
+
 The scripts in this repository is used to autonomously control the Crazyflie
 using a Kinect 2.0. For more information see [this wiki page](https://wiki.bitcraze.io/doc:crazyflie:vision:index "Vision Wiki").
 
