@@ -9,3 +9,7 @@ The following scripts are available:
  - **control:** Runs the control loops
  - **set-point:** UI for setting a set-point for the control
  - **visualization:** PID visualizations for debugging
+
+## Contribute
+
+Go to [contribute page](https://www.bitcraze.io/contribute/) on our website to learn more.
